@@ -261,6 +261,7 @@ const AttacksResults: React.FC = () => {
         setDetails(groupedData);
       } catch (error) {
         console.error('Error fetching attack results:', error);
+        console.log(error);
         // Handle error state or show error message
       }
     };

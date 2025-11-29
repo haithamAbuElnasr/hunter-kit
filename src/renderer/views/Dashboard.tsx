@@ -39,6 +39,7 @@ export function Dashboard() {
       setProjects(projectNames);
     } catch (error) {
       console.error('Error listing projects:', error);
+      console.log(error);
     }
   };
 

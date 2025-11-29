@@ -7,6 +7,7 @@ export async function countLines(filePath: PathLike) {
     const lineCount = data.split('\n').length;
     return lineCount - 1;
   } catch (error) {
+    console.log(error);
     throw new Error(`Error reading file: ${error}`);
   }
 }

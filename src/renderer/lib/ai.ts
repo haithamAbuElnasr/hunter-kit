@@ -62,12 +62,14 @@ export const streamOpenChat = (
                     onMessage(jsonData.response);
                   } catch (error) {
                     console.error('Failed to parse JSON:', error);
+                    console.log(error);
                   }
                 }
               });
               readChunk();
             })
             .catch((error) => {
+              console.log(error);
               onError(error);
             });
         };
@@ -75,9 +77,11 @@ export const streamOpenChat = (
         readChunk();
       })
       .catch((error) => {
+        console.log(error);
         onError(error);
       });
   } catch (error) {
+    console.log(error);
     onError(error);
   }
 };

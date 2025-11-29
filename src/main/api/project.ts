@@ -22,8 +22,9 @@ export function readDirectoryNames(
     });
 
     return directories;
-  } catch (err) {
-    console.error(`Error reading directory: ${err}`);
+  } catch (error) {
+    console.error(`Error reading directory: ${error}`);
+    console.log(error);
     return [];
   }
 }
@@ -32,8 +33,9 @@ export function createProjectDir(name: string) {
   try {
     const dir = fs.mkdirSync(`${PROJECT_DIR}/${name}`);
     return dir;
-  } catch (err) {
-    console.error(`Error creating project dir: ${err}`);
+  } catch (error) {
+    console.error(`Error creating project dir: ${error}`);
+    console.log(error);
   }
 }
 export function createJsonFile(name: string, domain: string) {
@@ -47,8 +49,9 @@ export function createJsonFile(name: string, domain: string) {
       path.join(`${PROJECT_DIR}/${name}`, 'details.json'),
       stringifyObj,
     );
-  } catch (err) {
-    console.error(`Error creating project dir: ${err}`);
+  } catch (error) {
+    console.error(`Error creating project dir: ${error}`);
+    console.log(error);
   }
 }
 
@@ -65,6 +68,7 @@ async function getResults(projectUUID: string) {
     return response;
   } catch (error) {
     console.error('Error retrieving results:', error);
+    console.log(error);
     throw error;
   }
 }
@@ -106,6 +110,7 @@ export async function createRequestToUrlScanner(name: string, domain: string) {
           }
         } catch (error) {
           console.error('Error retrieving results:', error);
+          console.log(error);
           return false;
         }
       };
@@ -138,6 +143,7 @@ export async function createRequestToUrlScanner(name: string, domain: string) {
           }
         } catch (error) {
           console.error('Error retrieving results:', error);
+          console.log(error);
           return false;
         }
       };
@@ -157,8 +163,9 @@ export function appendDateToJson(projectName: string, data: Object) {
     const oldData = JSON.parse(blob);
     const newData = JSON.stringify({ ...oldData, ...data });
     fs.writeFileSync(path.join(`${projectName}`, 'details.json'), newData);
-  } catch (err) {
-    console.error(`Error creating project dir: ${err}`);
+  } catch (error) {
+    console.error(`Error creating project dir: ${error}`);
+    console.log(error);
   }
 }
 
@@ -167,6 +174,7 @@ export function projectDetails(projectName: string) {
     const db = connectJson(`${PROJECT_DIR}/${projectName}/details.json`);
     return db.read();
   } catch (error) {
+    console.log(error);
     throw new Error('Project Cannot be created');
   }
 }
@@ -176,6 +184,7 @@ export function projectScan(projectName: string) {
     const db = connectJson(`${PROJECT_DIR}/${projectName}/cf_scan.json`);
     return db.read();
   } catch (error) {
+    console.log(error);
     return 'error';
   }
 }
@@ -187,6 +196,7 @@ export function projectAttackResult(projectName: string) {
     );
     return db.read();
   } catch (error) {
+    console.log(error);
     return 'error';
   }
 }

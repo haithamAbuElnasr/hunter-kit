@@ -18,6 +18,7 @@ export function returnFile(where: string, type: string) {
     };
   } catch (error) {
     console.error('Error reading file:', error);
+    console.log(error);
     return {
       statusCode: 500,
       body: 'no results',

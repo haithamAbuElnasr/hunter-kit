@@ -16,6 +16,7 @@ export class JSONDB<T> {
       return JSON.parse(data) as T;
     } catch (error) {
       console.error('Error reading file:', error);
+      console.log(error);
       return null;
     }
   }
@@ -38,6 +39,7 @@ export class JSONDB<T> {
       );
     } catch (error) {
       console.error('Error updating file:', error);
+      console.log(error);
     }
   }
 
@@ -46,6 +48,7 @@ export class JSONDB<T> {
       await fs.unlink(this.filePath);
     } catch (error) {
       console.error('Error deleting file:', error);
+      console.log(error);
     }
   }
 }

@@ -24,6 +24,7 @@ export function ProjectCard({ name }: { name: string }) {
       setProject(res);
     } catch (error) {
       console.error('Error listing projects:', error);
+      console.log(error);
     }
   };
 

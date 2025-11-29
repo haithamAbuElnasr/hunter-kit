@@ -21,9 +21,11 @@ export function initProjectDir() {
   const dirName = `${path.join(__dirname, '../../projects')}`;
 
   if (!existsSync(dirName)) {
-    mkdir(dirName, (err) => {
-      if (err) console.error('Error creating dir', err);
-      else console.log('project dir created');
+    mkdir(dirName, (error) => {
+      if (error) {
+        console.error('Error creating dir', error);
+        console.log(error);
+      } else console.log('project dir created');
     });
   } else {
     console.log('Directory already exists.');
@@ -45,8 +47,9 @@ export function createDirIfNotExist(outputDir: string, dirname: string) {
     if (!existsSync(join(outputDir, dirname))) {
       mkdirSync(join(outputDir, dirname));
     }
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
+    console.log(error);
   }
 }
 export function defaultToolObj(): { run: boolean; resulCount: number } {

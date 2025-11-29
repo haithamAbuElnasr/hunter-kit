@@ -9,25 +9,32 @@ import { ProjectDetails } from '../../../types';
 import { toast } from '../../../components/ui/use-toast';
 
 export default function SqlInjection(details: ProjectDetails) {
-  const [Loading, setLoading] = useState<boolean>(false);
-  const RunSqlInjection = async () => {
-    if (details.name) {
+  const [loading, setLoading] = useState(false);
+
+  const runSqlInjection = async () => {
+    if (!details.name) return;
+
+    setLoading(true); // turn spinner on immediately
+    try {
       const res = await window.electron.ipcRenderer.invoke('multi-scans', {
         projectName: details.name,
       });
+
       if (res) {
-        toast({
-          title: 'Multi Scans job compeleted',
-        });
+        toast({ title: 'Multi‑scan job completed' });
       }
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Multi‑scan job failed', variant: 'destructive' });
+    } finally {
+      setLoading(false); // ensure we always turn the spinner off
     }
-    setLoading(true);
   };
+
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      {!Loading ? (
-        <Button onClick={RunSqlInjection}>Process</Button>
+      {!loading ? (
+        <Button onClick={runSqlInjection}>Process</Button>
       ) : (
         <Button disabled>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

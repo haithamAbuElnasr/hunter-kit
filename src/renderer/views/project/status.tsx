@@ -22,6 +22,7 @@ export default function Status() {
       setProjects(projectNames);
     } catch (error) {
       console.error('Error listing projects:', error);
+      console.log(error);
     }
   };
 
@@ -39,6 +40,7 @@ export default function Status() {
       }
     } catch (error) {
       console.error('Error listing projects:', error);
+      console.log(error);
     }
   };
 

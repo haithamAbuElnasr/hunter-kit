@@ -16,6 +16,7 @@ export class BrowserDB {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error reading data:', error);
+      console.log(error);
       return null;
     }
   }

@@ -40,6 +40,7 @@ const UIofAI: React.FC = ({
         setMessages(response.result.response);
       } catch (error) {
         console.error('Failed to fetch data:', error);
+        console.log(error);
         // Handle errors from the main process
       }
     };

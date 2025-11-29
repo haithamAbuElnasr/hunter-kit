@@ -187,7 +187,8 @@ ipcMain.handle('create-project', async (event, args) => {
     createJsonFile(projectName, domain);
     const scan = await createRequestToUrlScanner(projectName, domain);
     return { error: false, scan };
-  } catch (err) {
+  } catch (error) {
+    console.log(error);
     return { error: true };
   }
 });
@@ -197,7 +198,8 @@ ipcMain.handle('get-attack-result', async (event, args) => {
   try {
     const results = await projectAttackResult(projectName);
     return { error: false, results };
-  } catch (err) {
+  } catch (error) {
+    console.log(error);
     return { error: true };
   }
 });
@@ -229,6 +231,7 @@ ipcMain.handle('fetch-data', async (event, args) => {
     return response.data;
   } catch (error) {
     console.error('Failed to fetch data:', error);
+    console.log(error);
     throw error;
   }
 });

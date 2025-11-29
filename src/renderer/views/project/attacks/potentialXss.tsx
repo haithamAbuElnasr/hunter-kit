@@ -7,27 +7,33 @@ import { useState } from 'react';
 import { Button } from '../../../components/ui/button';
 import { ProjectDetails } from '../../../types';
 import { toast } from '../../../components/ui/use-toast';
-
 export default function PotentialXss(details: ProjectDetails) {
-  const [Loading, setLoading] = useState<boolean>(false);
-  const RunPotentialXss = async () => {
-    if (details.name) {
+  const [loading, setLoading] = useState(false);
+
+  const runPotentialXss = async () => {
+    if (!details.name) return;
+
+    setLoading(true); // <-- turn spinner on immediately
+    try {
       const res = await window.electron.ipcRenderer.invoke('potential-xss', {
         projectName: details.name,
       });
+
       if (res) {
-        toast({
-          title: 'Potential XSS job compeleted',
-        });
+        toast({ title: 'Potential XSS job completed' });
       }
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Potential XSS failed', variant: 'destructive' });
+    } finally {
+      setLoading(false); // <-- stop spinner whether it succeeds or fails
     }
-    setLoading(true);
   };
+
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      {!Loading ? (
-        <Button onClick={RunPotentialXss}>Process</Button>
+      {!loading ? (
+        <Button onClick={runPotentialXss}>Process</Button>
       ) : (
         <Button disabled>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
