@@ -27,10 +27,11 @@ export function StatusCard(details: ProjectDetails) {
       <Card className="hover:bg-slate-900 py-4 px-6 duration-300">
         <div className="flex justify-start gap-2 mb-6 items-end">
           <div className="text-5xl font-bold">{job.result}</div>
-          <div className="font-bold">{formatResultNames(job.name)}</div>
+          <div className="font-bold">{job.name}</div>
         </div>
         <p className="flex justify-end">
-          Last Execution: {formatDistanceToNow(job.date)}
+          Last Execution:{' '}
+          {job.date ? formatDistanceToNow(new Date(job.date)) : ''}
         </p>
       </Card>
     );

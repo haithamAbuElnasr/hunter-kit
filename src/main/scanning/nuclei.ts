@@ -9,9 +9,14 @@ import { countLines } from '../results/countResults';
 
 const execFileAsync = util.promisify(execFile);
 
-/**
- * Ensure an output directory exists and return its resolved path
- */
+/** Return the default Nuclei templates base path */
+function nucleiTemplatesPath(): string {
+  // On Windows, usually in C:\Users\<user>\nuclei-templates
+  const home = process.env.USERPROFILE || process.env.HOMEPATH || 'C:\\Users\\Public';
+  return path.join(home, 'nuclei-templates');
+}
+
+/** Ensure a directory exists */
 function ensureDir(dirPath: string): string {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
@@ -23,32 +28,40 @@ function ensureDir(dirPath: string): string {
  * Generic nuclei scan runner (cross‑platform safe)
  */
 async function runScan(
-  scanType: string, // e.g. "-t http/"
+  scanType: string, // e.g. "http/"
   outputFileName: string,
   dbKey: string,
   outputDir: string,
   inputFile = 'httpx_live_domains.txt',
 ): Promise<{ message: string; success: boolean; error: any }> {
+  const nucleiPath = toolPath('nuclei');
+  ensureDir(outputDir);
+
+  const inputPath = path.join(outputDir, inputFile);
+  const outputFileNameJson = outputFileName.replace('.txt', '.json');
+  const outputPathTxt = path.join(outputDir, outputFileName);
+  const outputPathJson = path.join(outputDir, outputFileNameJson);
+
+  let success = true;
+  let error: any = null;
+  let numberOfUrls = 0;
+
   try {
-    const nucleiPath = toolPath('nuclei');
-    ensureDir(outputDir);
-
-    const inputPath = path.join(outputDir, inputFile);
-    const outputFileNameJson = outputFileName.replace('.txt', '.json');
-    const outputPathTxt = path.join(outputDir, outputFileName);
-    const outputPathJson = path.join(outputDir, outputFileNameJson);
-
     if (!fs.existsSync(inputPath)) {
       throw new Error(`Input file not found: ${inputPath}`);
     }
 
-    // Parse nuclei flags correctly into array form to avoid shell interpretation issues
-    // Example: "-t http/" -> ["-t", "http/"]
-    const scanArgs = scanType.trim().split(/\s+/);
+    // Resolve template directory
+    const templatesDir = nucleiTemplatesPath();
+    const scanTemplatePath = path.join(templatesDir, scanType);
+
+    // If user passed something like '-t http/vulnerabilities', we already
+    // add the full path automatically.
     const args = [
       '-l',
       inputPath,
-      ...scanArgs,
+      '-t',
+      scanTemplatePath,
       '-o',
       outputPathTxt,
       '-je',
@@ -57,14 +70,20 @@ async function runScan(
 
     console.log('Running nuclei:', nucleiPath, args.join(' '));
 
-    // Execute nuclei safely without invoking any shell
     await execFileAsync(nucleiPath, args, {
       windowsHide: true,
       stdio: 'inherit',
     });
 
-    const numberOfUrls = await countLines(outputPathTxt);
+    numberOfUrls = await countLines(outputPathTxt);
+  } catch (err) {
+    success = false;
+    error = err;
+    console.error(`Error occurred in ${dbKey} scan:`, err);
+  }
 
+  // Always write update to details.json
+  try {
     const db = connectJson(path.join(outputDir, 'details.json'));
     await db.update({
       [dbKey]: {
@@ -74,74 +93,42 @@ async function runScan(
         date: new Date().toUTCString(),
       },
     });
-
-    return { message: 'Done', success: true, error: null };
-  } catch (error) {
-    console.error(`Error occurred in ${dbKey} scan:`, error);
-    return { message: 'Error', success: false, error };
+  } catch (err) {
+    console.error(`Couldn't update details.json for ${dbKey}:`, err);
   }
+
+  return { message: success ? 'Done' : 'Error', success, error };
 }
 
-/**
- * Individual exported scan functions
- */
+/** Individual scan functions */
 
 export async function generalScanning(outputDir: string = PROJECT_DIR) {
-  return runScan(
-    '-t http/',
-    'general_scanning.txt',
-    'generalScanning',
-    outputDir,
-  );
+  return runScan('http', 'general_scanning.txt', 'generalScanning', outputDir);
 }
 
 export async function exposedPanels(outputDir: string = PROJECT_DIR) {
-  return runScan(
-    '-t http/exposed-panels',
-    'exposed_panels.txt',
-    'exposedPanels',
-    outputDir,
-  );
+  return runScan('http/exposed-panels', 'exposed_panels.txt', 'exposedPanels', outputDir);
 }
 
 export async function defaultCredentials(outputDir: string = PROJECT_DIR) {
-  return runScan(
-    '-t http/default-logins',
-    'default_credentials.txt',
-    'defaultCredentials',
-    outputDir,
-  );
+  return runScan('http/default-logins', 'default_credentials.txt', 'defaultCredentials', outputDir);
 }
 
 export async function subdomainTakeovers(outputDir: string = PROJECT_DIR) {
-  return runScan(
-    '-t http/takeovers',
-    'subdomain_takeovers.txt',
-    'subdomainTakeovers',
-    outputDir,
-  );
+  return runScan('http/takeovers', 'subdomain_takeovers.txt', 'subdomainTakeovers', outputDir);
 }
 
 export async function scanningForExposures(outputDir: string = PROJECT_DIR) {
-  return runScan('-t exposures/', 'exposures.txt', 'exposures', outputDir);
+  // Path: nuclei-templates/http/exposures
+  return runScan('http/exposures', 'exposures.txt', 'exposures', outputDir);
 }
 
 export async function scanningCVEs(outputDir: string = PROJECT_DIR) {
-  return runScan(
-    '-t http/vulnerabilities',
-    'CVEs.txt',
-    'scanningCVEs',
-    outputDir,
-    'waybackurls_archive.txt',
-  );
+  // Path: nuclei-templates/http/vulnerabilities
+  return runScan('http/vulnerabilities', 'CVEs.txt', 'scanningCVEs', outputDir, 'waybackurls_archive.txt');
 }
 
 export async function scanningForLFI(outputDir: string = PROJECT_DIR) {
-  return runScan(
-    '-tags lfi',
-    'LFI.txt',
-    'scanningForLFI',
-    outputDir,
-    'waybackurls_archive.txt',
-  );
+  // Path: nuclei-templates/file/lfi or filter by tag
+  return runScan('file/lfi', 'LFI.txt', 'scanningForLFI', outputDir, 'waybackurls_archive.txt');
 }

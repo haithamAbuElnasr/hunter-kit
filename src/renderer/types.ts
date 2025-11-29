@@ -19,17 +19,32 @@ export type JobDetails = {
   date: string;
 };
 export interface ProjectDetails {
+  // Basic project metadata
   name: string;
   domain: string;
+
+  // Recon Jobs
   subfinder?: JobDetails;
   screens?: JobDetails;
   params?: JobDetails;
   liveDomains?: JobDetails;
-  generalScanning?: JobDetails;
-  XSS?: JobDetails;
-  multiScans?: JobDetails;
   archive?: JobDetails;
   js?: JobDetails;
+
+  // Nuclei / Attack Jobs
+  generalScanning?: JobDetails;
+  exposedPanels?: JobDetails;
+  defaultCredentials?: JobDetails;
+  subdomainTakeovers?: JobDetails;
+  exposures?: JobDetails;
+  scanningCVEs?: JobDetails;
+  scanningForLFI?: JobDetails;
+
+  // Dalfox‑based Jobs
+  XSS?: JobDetails;
+  multiScans?: JobDetails;
+
+  // Metadata
   updatedAt: Date;
 }
 

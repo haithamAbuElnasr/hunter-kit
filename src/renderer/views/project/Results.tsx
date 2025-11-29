@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 import { useParams } from 'react-router-dom';
 import {
   Card,
@@ -45,7 +46,12 @@ export default function Results() {
               {details && (
                 <div className="flex flex-col space-x">
                   <h1 className="flex flex-col font-semibold">
-                    Last Run <span>{details.subfinder?.date}</span>
+                    Last Run{' '}
+                    <span>
+                      {details.subfinder?.date
+                        ? formatDistanceToNow(new Date(details.subfinder.date))
+                        : ''}
+                    </span>
                   </h1>
                   <h1 className="flex flex-col font-semibold">
                     No. of Subdomains found:
@@ -65,8 +71,14 @@ export default function Results() {
               {details && (
                 <div className="flex flex-col space-x-2">
                   <h1 className="flex flex-col font-semibold">
-                    Last Run
-                    <span>{details.recon?.liveDomains?.date ?? ''}</span>
+                    Last Run{' '}
+                    <span>
+                      {details.liveDomains?.date
+                        ? formatDistanceToNow(
+                            new Date(details.liveDomains.date),
+                          )
+                        : ''}
+                    </span>
                   </h1>
                 </div>
               )}
@@ -82,7 +94,12 @@ export default function Results() {
               {details && (
                 <div className="flex flex-col space-x-2">
                   <h1 className="flex flex-col font-semibold">
-                    Last Run <span>{details.recon?.screens?.date ?? ''}</span>
+                    Last Run{' '}
+                    <span>
+                      {details.screens?.date
+                        ? formatDistanceToNow(new Date(details.screens.date))
+                        : ''}
+                    </span>
                   </h1>
                 </div>
               )}
@@ -97,7 +114,14 @@ export default function Results() {
             <CardContent className="flex justify-between">
               {details && (
                 <div className="flex flex-col space-x-2">
-                  <h1 className="flex flex-col font-semibold">Last Run</h1>
+                  <h1 className="flex flex-col font-semibold">
+                    Last Run{' '}
+                    <span>
+                      {details.archive?.date
+                        ? formatDistanceToNow(new Date(details.archive.date))
+                        : ''}
+                    </span>
+                  </h1>
                 </div>
               )}
               <SubDomainsResults />
@@ -113,7 +137,14 @@ export default function Results() {
             <CardContent className="flex justify-between">
               {details && (
                 <div className="flex flex-col space-x-2">
-                  <h1 className="flex flex-col font-semibold">Last Run</h1>
+                  <h1 className="flex flex-col font-semibold">
+                    Last Run{' '}
+                    <span>
+                      {details.js?.date
+                        ? formatDistanceToNow(new Date(details.js.date))
+                        : ''}
+                    </span>
+                  </h1>
                 </div>
               )}
               <SubDomainsResults />
@@ -130,7 +161,12 @@ export default function Results() {
               {details && (
                 <div className="flex flex-col space-x-2">
                   <h1 className="flex flex-col font-semibold">
-                    Last Run <span>{details.recon?.params?.date ?? ''}</span>
+                    Last Run{' '}
+                    <span>
+                      {details.params?.date
+                        ? formatDistanceToNow(new Date(details.params.date))
+                        : ''}
+                    </span>
                   </h1>
                 </div>
               )}
