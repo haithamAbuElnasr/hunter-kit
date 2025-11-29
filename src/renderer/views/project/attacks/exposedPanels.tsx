@@ -5,28 +5,32 @@ import { Button } from '../../../components/ui/button';
 import { toast } from '../../../components/ui/use-toast';
 
 export default function ExposedPanels(details: ProjectDetails) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [Loading, setLoading] = useState<boolean>(false);
-  const RunExposedPanels = async () => {
-    // eslint-disable-next-line react/destructuring-assignment
-    if (details.name) {
+  const [loading, setLoading] = useState(false);
+
+  const runExposedPanels = async () => {
+    if (!details.name) return;
+
+    setLoading(true); // turn spinner on immediately
+    try {
       const res = await window.electron.ipcRenderer.invoke('exposed-panels', {
-        // eslint-disable-next-line react/destructuring-assignment
         projectName: details.name,
       });
+
       if (res) {
-        toast({
-          title: 'Exposed Panels job compeleted',
-        });
+        toast({ title: 'Exposed Panels job completed' });
       }
+    } catch (err) {
+      console.error(err);
+      toast({ title: 'Exposed Panels job failed', variant: 'destructive' });
+    } finally {
+      setLoading(false); // always turn spinner off
     }
-    setLoading(true);
   };
+
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
-      {!Loading ? (
-        <Button onClick={RunExposedPanels}>Process</Button>
+      {!loading ? (
+        <Button onClick={runExposedPanels}>Process</Button>
       ) : (
         <Button disabled>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
