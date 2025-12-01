@@ -2,7 +2,7 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-unused-vars */
 const url =
-  'https://api.cloudflare.com/client/v4/accounts/3cce5a88886b46f56d9ff989b715a588/ai/run/@cf/openchat/openchat-3.5-0106';
+  'https://api.cloudflare.com/client/v4/accounts/3cce5a88886b46f56d9ff989b715a588/ai/run/@cf/meta/llama-3-8b-instruct';
 const token = 'YbXmqtPZXLgeQSOSjMHC3ka4Qret1QCpQSZXMWCR';
 
 interface Message {

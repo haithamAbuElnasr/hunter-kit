@@ -54,7 +54,9 @@ export async function wwayback(
 
     // Process each domain with waybackurls safely
     for (const domain of inputDomains) {
-      const { stdout } = await execFileAsync(waybackPath, [domain]);
+      const { stdout } = await execFileAsync(waybackPath, [domain], {
+        maxBuffer: 1024 * 1024 * 100, // 100 MB buffer
+      });
       if (stdout) outStream.write(stdout);
     }
     outStream.end();
@@ -74,6 +76,7 @@ export async function wwayback(
     return { message: 'Done', success: true, error: null };
   } catch (error) {
     console.error('Error in wwayback:', error);
+    console.log('Error in wwayback:', error);
     return { message: "There's no data to get", success: false, error };
   }
 }

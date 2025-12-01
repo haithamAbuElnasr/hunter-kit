@@ -206,7 +206,7 @@ ipcMain.handle('get-attack-result', async (event, args) => {
 
 ipcMain.handle('fetch-data', async (event, args) => {
   const url =
-    'https://api.cloudflare.com/client/v4/accounts/3cce5a88886b46f56d9ff989b715a588/ai/run/@cf/openchat/openchat-3.5-0106';
+    'https://api.cloudflare.com/client/v4/accounts/3cce5a88886b46f56d9ff989b715a588/ai/run/@cf/meta/llama-3-8b-instruct';
   const token = 'YbXmqtPZXLgeQSOSjMHC3ka4Qret1QCpQSZXMWCR';
 
   const requestData = {
@@ -227,7 +227,7 @@ ipcMain.handle('fetch-data', async (event, args) => {
       },
     });
 
-    console.log(response);
+   // console.log(response);
     return response.data;
   } catch (error) {
     console.error('Failed to fetch data:', error);
